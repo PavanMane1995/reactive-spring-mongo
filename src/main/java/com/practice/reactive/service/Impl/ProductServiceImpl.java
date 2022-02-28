@@ -5,7 +5,6 @@ import com.practice.reactive.entity.Product;
 import com.practice.reactive.repository.ProductRepository;
 import com.practice.reactive.service.ProductService;
 import com.practice.reactive.utils.AppUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -30,8 +29,10 @@ public class ProductServiceImpl implements ProductService {
                 .map(AppUtils::entityToDto);
     }
 
-    public void saveProduct(ProductDto pDto){
-        Product p = AppUtils.dtoToEntity(pDto);
-        productRepository.save(p).log();
+    public void saveProduct(Mono<ProductDto> pDto){
+        pDto
+                .map(AppUtils::dtoToEntity)
+                .flatMap(productRepository::save);
+
     }
 }
