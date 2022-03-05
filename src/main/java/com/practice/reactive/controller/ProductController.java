@@ -26,7 +26,7 @@ public class ProductController {
     }
 
     @PostMapping(path = "/save-product")
-    public void saveCustomer(@RequestBody Mono<ProductDto> productDto){
-        productService.saveProduct(productDto);
+    public Mono<ProductDto> saveCustomer(@RequestBody Mono<ProductDto> productDto){
+        return productService.saveProduct(productDto);
     }
 }

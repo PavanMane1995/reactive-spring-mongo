@@ -8,5 +8,5 @@ public interface ProductService {
 
      Flux<ProductDto> getAllProducts();
      Mono<ProductDto> getProduct(String id);
-     void saveProduct(Mono<ProductDto> pDto);
+     Mono<ProductDto> saveProduct(Mono<ProductDto> pDto);
 }

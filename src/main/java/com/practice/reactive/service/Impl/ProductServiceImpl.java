@@ -6,6 +6,8 @@ import com.practice.reactive.repository.ProductRepository;
 import com.practice.reactive.service.ProductService;
 import com.practice.reactive.utils.AppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,8 +19,11 @@ public class ProductServiceImpl implements ProductService {
     ProductRepository productRepository;
 
     public Flux<ProductDto> getAllProducts(){
+        Query q = new Query();
+        Criteria a = Criteria.where("name").is("pavan");
+        q.addCriteria(a);
         return productRepository
-                .findAll()
+                .findAll().log()
                 .map(AppUtils::entityToDto);
 
     }
@@ -29,10 +34,11 @@ public class ProductServiceImpl implements ProductService {
                 .map(AppUtils::entityToDto);
     }
 
-    public void saveProduct(Mono<ProductDto> pDto){
-        pDto
-                .map(AppUtils::dtoToEntity)
-                .flatMap(productRepository::save);
+    public Mono<ProductDto> saveProduct(Mono<ProductDto> pDto){
+       return pDto.map(AppUtils::dtoToEntity)
+                .flatMap(productRepository::insert)
+                .map(AppUtils::entityToDto)
+               .onErrorResume(e -> {return Mono.just(new ProductDto());});
 
     }
 }
